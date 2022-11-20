@@ -36,7 +36,9 @@ contract Ballot {
     }
 
     function votePower(address account) public view returns (uint256) {
-       return voteToken.getPastVotes(account,targetBlock) - votePowerSpent[account]
+        return
+            voteToken.getPastVotes(account, targetBlock) -
+            votePowerSpent[account];
     }
 
     function winningProposal() public view returns (uint256 winningProposal_) {
