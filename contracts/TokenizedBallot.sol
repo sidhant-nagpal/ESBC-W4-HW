@@ -6,6 +6,8 @@ import "./ERC20Votes.sol";
 contract Ballot {
     MyToken public voteToken;
 
+    address public owner;
+
     uint256 public targetBlock;
 
     struct Proposal {
@@ -22,6 +24,7 @@ contract Ballot {
         address _voteToken,
         uint256 _targetBlock
     ) {
+        owner = msg.sender;
         voteToken = MyToken(_voteToken);
         targetBlock = _targetBlock;
         for (uint256 i = 0; i < proposalNames.length; i++) {
@@ -53,5 +56,14 @@ contract Ballot {
 
     function winnerName() external view returns (bytes32 winnerName_) {
         winnerName_ = proposals[winningProposal()].name;
+    }
+
+    function mint(address to, uint256 amount) external {
+        require(msg.sender == owner, "Only owner can mint");
+        require(
+            to != address(this),
+            "To address cannot be this contract's address"
+        );
+        voteToken.mint(to, amount);
     }
 }
