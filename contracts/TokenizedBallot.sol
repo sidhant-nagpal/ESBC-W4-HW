@@ -58,17 +58,7 @@ contract Ballot {
         winnerName_ = proposals[winningProposal()].name;
     }
 
-    function transferOwnership(address newOwner) external {
-        require(msg.sender == owner, "Only owner can transfer ownership");
-        owner = newOwner;
-    }
-
-    function mint(address to, uint256 amount) external {
-        require(msg.sender == owner, "Only owner can mint");
-        require(
-            to != address(this),
-            "To address cannot be this contract's address"
-        );
-        voteToken.mint(to, amount);
+    function getProposals() external view returns (Proposal[] memory) {
+        return proposals;
     }
 }
