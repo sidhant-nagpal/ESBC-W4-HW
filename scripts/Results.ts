@@ -1,7 +1,7 @@
 import abi from "../artifacts/contracts/TokenizedBallot.sol/Ballot.json";
 import { ethers } from "hardhat";
 
-const CONTRACT_ADDRESS = "0x19dD5214e03849266bf498738Edc4285298D9d0f";
+const CONTRACT_ADDRESS = "0x400558Db1f72cc04A1160fCCD3Cd7E1CA324D303";
 const contractABI = abi.abi;
 const PROPOSALS_COUNT = 3;
 
@@ -13,7 +13,7 @@ async function main() {
     for(let i = 0; i<PROPOSALS_COUNT; i++){
         const result = await contract.proposals(i);
         const name = ethers.utils.parseBytes32String(result.name);
-        const votes = result.voteCount;
+        const votes = ethers.utils.formatEther(result.voteCount);
         console.log(`${name} -------> ${votes}`);
         if(i == PROPOSALS_COUNT-1){
             process.exit();
