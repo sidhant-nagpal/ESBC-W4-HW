@@ -1,58 +1,67 @@
 import { ethers } from "hardhat";
 import * as dotenv from "dotenv";
-import { MyToken__factory } from "../typechain-types";
+import { MyToken__factory, Ballot__factory } from "../typechain-types";
+import accountsWithVotingPower from "../accounts.json";
+
 dotenv.config();
 
-const TEST_MINT_VALUE = ethers.utils.parseEther("10");
+const MINT_VALUE = ethers.utils.parseEther("100");
+const PROPOSAL_NAMES = ["Solidity", "Vyper", "Yul"];
 
 async function main() {
-    const accounts = await ethers.getSigners();
-    const [minter, voter, other] = accounts;
-    const contractFactory = new MyToken__factory(minter);
-    const contract = await contractFactory.deploy();
-    await contract.deployed();
-    console.log(`Tokenized Vote contract deployed at ${contract.address}\n`);
+  // Ensure that accounts.json is created and has addresses
+  if (!accountsWithVotingPower || accountsWithVotingPower.length < 1) {
+    throw new Error(
+      "Please create accounts.json in the root folder with all the accounts that should get voting tokens"
+    );
+  }
 
-    let voterTokenBalance = await contract.balanceOf(voter.address);
-    console.log(`The voter starts with ${voterTokenBalance} decimals of balance\n`);
+  // All accounts supported on the current network
+  const accounts = await ethers.getSigners();
 
-    const mintTx = await contract.mint(voter.address, TEST_MINT_VALUE);
-    await mintTx.wait();
+  const [deployer] = accounts;
 
-    voterTokenBalance = await contract.balanceOf(voter.address);
-    console.log(`After the mint, the voter has ${voterTokenBalance} decimals of balance\n`);
+  // Deploy ERC20 MyToken contract
+  const erc20TokenContractFactory = new MyToken__factory(deployer);
+  const erc20TokenContract = await erc20TokenContractFactory.deploy();
+  await erc20TokenContract.deployed();
+  console.log(`Token contract deployed at ${erc20TokenContract.address}\n`);
 
-    let votePower = await contract.getVotes(voter.address);
-    console.log(`After the mint, the voter has ${votePower} decimals of vote power\n`);
+  const mintVotingTokensPromises = [];
+  for (let i = 0; i < accountsWithVotingPower.length; i++) {
+    const mintTx = await erc20TokenContract.mint(
+      accountsWithVotingPower[i],
+      MINT_VALUE
+    );
+    mintVotingTokensPromises.push(mintTx.wait());
+  }
 
-    const delegateTx = await contract.connect(voter).delegate(voter.address);
-    await delegateTx.wait();
+  await Promise.all(mintVotingTokensPromises);
 
-    votePower = await contract.getVotes(voter.address);
-    console.log(`After the self delegation, the voter has ${votePower} decimals of vote power\n`);
+  console.log("Tokens minted to accounts\n");
 
-    const transferTx = await contract.connect(voter).transfer(other.address, TEST_MINT_VALUE.div(2));
-    await transferTx.wait();
+  const currentBlock = await ethers.provider.getBlock("latest");
+  // Deploy TokenizedBallot contract
+  const tokenizedBallotContractFactory = new Ballot__factory(deployer);
+  const tokenizedBallotContract = await tokenizedBallotContractFactory.deploy(
+    PROPOSAL_NAMES.map((name) => ethers.utils.formatBytes32String(name)),
+    erc20TokenContract.address,
+    currentBlock.number
+  );
+  await tokenizedBallotContract.deployed();
+  console.log(
+    `Tokenized Ballot contract deployed at ${tokenizedBallotContract.address} with target block as ${currentBlock.number}\n`
+  );
 
-    votePower = await contract.getVotes(voter.address);
-    console.log(`After the transfer, the voter has ${votePower} decimals of vote power\n`);
-
-    votePower = await contract.getVotes(other.address);
-    console.log(`After the transfer, the other account has ${votePower} decimals of vote power\n`);
-     
-    const delegateOtherTx = await contract.connect(other).delegate(other.address);
-    await delegateOtherTx.wait();
-    votePower = await contract.getVotes(other.address);
-    console.log(`After the self delegation, the other account has ${votePower} decimals of vote power\n`);
-
-    const currentBlock = await ethers.provider.getBlock("latest");
-    for (let blockNumber = currentBlock.number - 1; blockNumber >= 0; blockNumber--) {
-        const pastVotePower = await contract.getPastVotes(voter.address, blockNumber);
-        console.log(`At block ${blockNumber}, the voter had ${pastVotePower} decimals of vote power\n`);
-    }
+  // List proposals
+  const proposals = await tokenizedBallotContract.getProposals();
+  console.log(
+    "Proposals:",
+    proposals.map((p: any) => ethers.utils.parseBytes32String(p.name))
+  );
 }
 
 main().catch((error) => {
-    console.error(error);
-    process.exitCode = 1;
-})
+  console.error(error);
+  process.exitCode = 1;
+});
