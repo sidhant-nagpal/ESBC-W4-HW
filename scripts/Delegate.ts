@@ -13,8 +13,6 @@ const contractABI = abi.abi;
 const showPrompt = prompt();
 
 async function main() {
-  const provider = ethers.getDefaultProvider("goerli");
-
   const signer = await ethers.getSigners();
 
   const contract = new ethers.Contract(
@@ -23,22 +21,16 @@ async function main() {
     signer[0]
   );
 
-  const voter = showPrompt("Please your wallet address: ");
-
   const other = showPrompt(
-    "Please wallet address you want to delgate your votes to: "
+    "Please enter wallet address you want to delgate your votes to: "
   );
-
-  // const amount = showPrompt(
-  //   "Please enter the amount of votes you want to delegate: "
-  // );
 
   try {
     const tx = await contract.delegate(other);
-    await tx.wait();
     console.log("Waiting for transaction confirmation...");
+    await tx.wait();
     const receipt = await tx.wait();
-    console.log(`You have delgate voting power to ${other}`);
+    console.log(`You have delgated voting power to ${other}`);
     console.log(receipt);
   } catch (err) {
     console.log(err);
