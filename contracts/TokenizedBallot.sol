@@ -58,6 +58,11 @@ contract Ballot {
         winnerName_ = proposals[winningProposal()].name;
     }
 
+    function transferOwnership(address newOwner) external {
+        require(msg.sender == owner, "Only owner can transfer ownership");
+        owner = newOwner;
+    }
+
     function mint(address to, uint256 amount) external {
         require(msg.sender == owner, "Only owner can mint");
         require(
