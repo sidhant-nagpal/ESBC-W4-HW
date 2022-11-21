@@ -61,4 +61,9 @@ contract Ballot {
     function getProposals() external view returns (Proposal[] memory) {
         return proposals;
     }
+
+    function changeTargetBlock(uint256 _targetBlock) external {
+        require(msg.sender == owner, "Only owner can change the targetBlock");
+        targetBlock = _targetBlock;
+    }
 }
