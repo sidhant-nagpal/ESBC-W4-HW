@@ -3,11 +3,11 @@ import * as dotenv from "dotenv";
 
 import prompt from "prompt-sync";
 
-import abi from "../artifacts/contracts/ERC20Votes.sol/MyToken.json";
+import abi from "../artifacts/contracts/TokenizedBallot.sol/Ballot.json";
 
 dotenv.config();
 
-const CONTRACT_ADDRESS = "0xF6e8FF785bA56C14DeE6056d457e2F78DB868Ece";
+const CONTRACT_ADDRESS = "0x400558Db1f72cc04A1160fCCD3Cd7E1CA324D303";
 const contractABI = abi.abi;
 
 const showPrompt = prompt();
@@ -19,7 +19,7 @@ async function main() {
 
   const voter = showPrompt("Please your wallet address: ");
 
-  let votePower = await contract.getVotes(voter);
+  let votePower = await contract.votePower(voter);
   console.log(
     `The voter ${voter} has voting power of ${ethers.utils.formatEther(
       votePower
