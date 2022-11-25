@@ -1,0 +1,3 @@
+Angular and the next file were not pushing to the master - I have to remove .git from next file and it was pushed afterwards
+
+more read here - https://stackoverflow.com/a/67066892/20288336
