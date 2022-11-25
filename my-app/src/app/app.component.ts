@@ -7,12 +7,14 @@ import { ethers } from 'ethers';
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  title = 'Example Title';
-  myNumber = 42;
+  provider: ethers.providers.Provider;
+  wallet: ethers.Wallet | undefined;
 
-  lastBlockNumber: number | undefined;
+  constructor() {
+    this.provider = ethers.providers.getDefaultProvider('goerli');
+  }
 
-  clicks = 0;
-
-  constructor() {}
+  createWallet() {
+    this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+  }
 }
