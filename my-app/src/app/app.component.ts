@@ -14,15 +14,5 @@ export class AppComponent {
 
   clicks = 0;
 
-  constructor() {
-    this.lastBlockNumber = 0;
-    ethers
-      .getDefaultProvider('goerli')
-      .getBlock('latest')
-      .then((block) => (this.lastBlockNumber = block.number));
-  }
-
-  countClick() {
-    this.clicks++;
-  }
+  constructor() {}
 }
