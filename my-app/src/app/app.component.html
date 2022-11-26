@@ -20,7 +20,16 @@
   </div>
   <div *ngIf="wallet" class="col-lg-6 mx-auto">
     <p>You are connected to the wallet {{ wallet.address }}</p>
-
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center"></div>
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+      <div class="card">
+        <div class="card-body">My ether balance is: {{ etherBalance }}</div>
+      </div>
+      <div class="card">
+        <div class="card-body">My token balance is: {{ tokenBalance }}</div>
+      </div>
+      <div class="card">
+        <div class="card-body">My voting power is: {{ votePower }}</div>
+      </div>
+    </div>
   </div>
 </div>
