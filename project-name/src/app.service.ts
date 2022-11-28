@@ -20,7 +20,7 @@ export class AppService {
   claimTokens(address: string) {
     // TODO: build the contract object
     // TODO : pick the singer using .env keys
-    // TODO: connect the contract object to singer
+    // TODO: connect the contract object to signer
     // TODO: make the transaction to mint tokens
     // TODO: await the transaction, get the receipt, return the hash
     return { result: `transaction hash for tokens minted for ${address}` };

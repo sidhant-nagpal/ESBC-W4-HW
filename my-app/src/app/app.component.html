@@ -1,58 +1,122 @@
 <div class="px-4 py-5 my-5 text-center">
-  <h1 class="display-5 fw-bold">My Ballot Example</h1>
-  <div *ngIf="!wallet" class="col-lg-6 mx-auto">
-    <p>To use this ballot you need to connect a wallet</p>
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      <button
-        (click)="createWallet()"
-        type="button"
-        class="btn btn-success btn-lg px-4 gap-3"
-      >
-        Create Wallet
-      </button>
-      <button type="button" disabled class="btn btn-info btn-lg px-4 gap-3">
-        Import Wallet
-      </button>
-      <button type="button" disabled class="btn btn-danger btn-lg px-4 gap-3">
-        Connect Wallet
-      </button>
-    </div>
-  </div>
-  <div *ngIf="wallet" class="col-lg-6 mx-auto">
-    <p>You are connected to the wallet {{ wallet.address }}</p>
-    <p>This application uses the token at the address {{ tokenAddress }}</p>
-    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-      <div class="card">
-        <div class="card-body">My ether balance is: {{ etherBalance }}</div>
+    <h1 class="display-5 fw-bold">My Ballot Example</h1>
+    <div *ngIf="!wallet" class="col-lg-6 mx-auto">
+      <p>To use this ballot you need to connect to a wallet</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <button (click)="createWallet()" type="button" class="btn btn-success btn-lg px-4 gap-3">
+          Create Wallet
+        </button>
+        <button (click)="importing()" class="btn btn-info btn-lg px-4 gap-3">
+          Import Wallet
+        </button>
+        <button disabled type="button" class="btn btn-danger btn-lg px-4 gap-3">
+          Connect Wallet
+        </button>
       </div>
-      <div class="card">
-        <div class="card-body">My token balance is: {{ tokenBalance }}</div>
-      </div>
-      <div class="card">
-        <div class="card-body">My voting power is: {{ votePower }}</div>
+      <div *ngIf="importInit">
+        <p>Import your wallet here:</p>
+        <input class="form-control mb-4" #importKey type="text" placeholder="Paste your private key here">
+        <button (click)="importWallet(importKey.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
+          Import
+        </button>
       </div>
     </div>
-    <p class="my-4">Claim your tokens here:</p>
-    <button
-      (click)="claimToken()"
-      type="button"
-      class="btn btn-success btn-lg px-4 gap-3"
-    >
-      Claim Tokens
-    </button>
-    <p class="my-4">Connect to the ballot here:</p>
-    <input
-      class="form-control mb-4"
-      #ballotContractAddress
-      type="text"
-      placeholder="Paste contract address here"
-    /><br />
-    <button
-      (click)="connectBallot(ballotContractAddress.value)"
-      type="button"
-      class="btn btn-success btn-lg px-4 gap-3"
-    >
-      Connect Ballot
-    </button>
-  </div>
+    <div *ngIf="wallet">
+      <p>You are connected to the wallet {{wallet.address}}</p>
+      <p>You are connected to the token {{tokenAddress}}</p>
+      <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+        <div class="card">
+          <div class="card-body">My ether balance is: {{etherBalance}}</div>
+        </div>
+        <div class="card">
+          <div class="card-body">My token balance is: {{tokenBalance}}</div>
+        </div>
+        <div class="card">
+          <div class="card-body">My voting power is: {{votePower}}</div>
+        </div>
+      </div>
+      <p class="mt-4">Claim your tokens here</p>
+      <button (click)="claimTokens()" type="button" class="btn btn-success btn-lg px-4 gap-3">
+        Claim Tokens
+      </button>
+      <br>
+      <br>
+      <div class="form-group row mb-4">
+        <label for="inputEmail3" class="col-sm-2 col-form-label">Delegate vote power to: </label>
+        <div class="col-sm-10">
+          <input #delegateAccountAddress type="email" class="form-control" id="inputEmail3" placeholder="Paste target address here">
+        </div>
+      </div>
+      <p *ngIf="delegateAddress">You successfully delegated vote power to {{delegateAddress}}</p>
+      <button (click)="delegate(delegateAccountAddress.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
+        Delegate
+      </button>
+      <br>
+      <br>
+      <br>
+
+      <div *ngIf="!ballotAddress">
+        <p>Connect to the ballot here:</p>
+        <input class="form-control mb-4" #ballotContractAddress type="text" placeholder="Paste contract address here">
+        <br>
+        <button (click)="connectBallot(ballotContractAddress.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
+          Connect Ballot
+        </button>
+      </div>
+      <div *ngIf="ballotAddress">
+        <p>You are connected to the ballot {{ballotAddress}}</p>
+      </div>
+
+      <div *ngIf="proposalNames.length > 0">
+        <p>The proposals are following:</p>
+        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+          <div class="card">
+            <div class="card-body">{{proposalNames[0]}}</div>
+          </div>
+          <div class="card">
+            <div class="card-body">{{proposalNames[1]}}</div>
+          </div>
+          <div class="card">
+            <div class="card-body">{{proposalNames[2]}}</div>
+          </div>
+        </div>
+
+        <label for="inputEmail3" class="col-sm-2 col-form-label">How much vote power do you want to use: </label>
+        <div class="col-sm-10">
+          <input #power type="number" class="form-control" id="inputEmail3" placeholder="Enter vote power here">
+        </div>
+        <button (click)="votePowerValue(power.value)" type="button" class="btn btn-success btn-lg px-4 gap-3 mt-4">
+          Submit
+        </button>
+
+        <div *ngIf="votePower">
+          <p class="mt-5">Select and click on "Vote" to vote for the selected proposal:</p>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="0">
+            <label class="form-check-label" for="inlineRadio1">{{proposalNames[0]}}</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1">
+            <label class="form-check-label" for="inlineRadio2">{{proposalNames[1]}}</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="2">
+            <label class="form-check-label" for="inlineRadio3">{{proposalNames[2]}}</label>
+          </div>
+          <br>
+          
+          <!-- click event listener  -->
+          <button  type="button" class="btn btn-success btn-lg px-4 gap-3">    
+            Vote
+          </button>  
+        
+        </div>
+
+        <div *ngIf="voteTx"> 
+          <p>Transaction successful: {{voteTx}}</p>
+          <p>You have voted for {{voteIndex}}</p>
+        </div>
+
+      </div>
+    </div>
 </div>
