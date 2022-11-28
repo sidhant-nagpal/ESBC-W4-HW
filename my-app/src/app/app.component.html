@@ -13,7 +13,7 @@
           Connect Wallet
         </button>
       </div>
-      <div *ngIf="importInit">
+      <div *ngIf="importInit" class="mt-4">
         <p>Import your wallet here:</p>
         <input class="form-control mb-4" #importKey type="text" placeholder="Paste your private key here">
         <button (click)="importWallet(importKey.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
@@ -98,9 +98,13 @@
           <button #btn3 (click)="castVote(btn3.value)" type="button" class="btn btn-primary btn-lg mx-3" value="2">{{proposalNames[2]}}</button>
         </div>
 
-        <div *ngIf="voteTx"> 
-          <p>Transaction successful: {{voteTx}}</p>
-          <p>You have voted for {{voteIndex}}</p>
+        <div *ngIf="voted" class="mt-4">
+          <h2>Waiting for the transaction confirmation...</h2>
+        </div>
+
+        <div *ngIf="voteTx" class="mt-4"> 
+          <h3>Transaction successful: {{voteTx}}</h3>
+          <p>You have voted for proposal at index {{voteIndex}} with {{votePowerUsed}} vote power</p>
         </div>
 
       </div>

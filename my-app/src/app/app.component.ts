@@ -71,13 +71,13 @@ export class AppComponent {
     this.importInit = true;
   }
 
-  importWallet(key: string) {
+  importWallet(privateKey: string) {
     this.http
-      .get<any>('http://localhost:3000/token-address')
+      .get<any>('http://localhost:3000/token/token-address')
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
         if (this.tokenAddress) {
-          this.wallet = new ethers.Wallet(key).connect(this.provider);
+          this.wallet = new ethers.Wallet(privateKey).connect(this.provider);
           this.tokenContract = new ethers.Contract(
             this.tokenAddress,
             tokenJson.abi,
@@ -104,7 +104,7 @@ export class AppComponent {
 
   claimTokens() {
     this.http
-      .post<any>('http://localhost:3000/claim-tokens-order', {
+      .post<any>('http://localhost:3000/token/claim-tokens-order', {
         address: this.wallet?.address,
       })
       .subscribe((ans) => {
@@ -129,7 +129,7 @@ export class AppComponent {
 
   connectBallot(address: string) {
     this.ballotAddress = address;
-    this.getBallotInfo(); //ballot contract address
+    this.getBallotInfo(); 
   }
 
   getBallotInfo() {
@@ -152,16 +152,16 @@ export class AppComponent {
   }
 
   castVote(index: string) {
-    if (this.ballotContract) {
-      this.ballotContract['vote'](parseInt(index), this.votePowerUsed).then(
-        (tx: ethers.providers.TransactionResponse) => {
+    if (this.ballotContract && this.votePowerUsed) {
+      this.voted = true;
+      this.ballotContract['vote'](parseInt(index), ethers.utils.parseEther((this.votePowerUsed).toString())).then(
+        (tx: { wait: () => Promise<any>; }) => {
           tx.wait().then((receipt) => {
             this.voteIndex = index;
             this.voteTx = receipt.transactionHash;
           });
         }
       );
-      this.voted = true;
     }
   }
 }
