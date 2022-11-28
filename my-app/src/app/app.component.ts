@@ -23,7 +23,7 @@ export class AppComponent {
 
   createWallet() {
     this.http
-      .get<any>('http://localhost:3000/token-address')
+      .get<any>('http://localhost:3000/token/token-address')
       .subscribe((ans) => {
         this.tokenAddress = ans.result;
         if (this.tokenAddress) {
@@ -38,7 +38,7 @@ export class AppComponent {
           });
           this.tokenContract['balanceOf'](this.wallet.address).then(
             (balanceBN: ethers.BigNumberish) => {
-              this.etherBalance = parseFloat(
+              this.tokenBalance = parseFloat(
                 ethers.utils.formatEther(balanceBN)
               );
             }
