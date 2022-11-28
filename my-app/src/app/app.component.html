@@ -68,7 +68,7 @@
       </div>
 
       <div *ngIf="proposalNames.length > 0">
-        <p>The proposals are following:</p>
+        <p>The proposals are:</p>
         <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
           <div class="card">
             <div class="card-body">{{proposalNames[0]}}</div>
@@ -81,35 +81,21 @@
           </div>
         </div>
 
-        <label for="inputEmail3" class="col-sm-2 col-form-label">How much vote power do you want to use: </label>
-        <div class="col-sm-10">
-          <input #power type="number" class="form-control" id="inputEmail3" placeholder="Enter vote power here">
+        <div class="form-group row mb-2 mt-5">
+          <label for="inputEmail3" class="col-sm-2 col-form-label">Enter vote power you want to use: </label>
+          <div class="col-sm-10">
+            <input #power type="email" class="form-control" id="inputEmail3" placeholder="Enter vote power here">
+          </div>
         </div>
         <button (click)="votePowerValue(power.value)" type="button" class="btn btn-success btn-lg px-4 gap-3 mt-4">
           Submit
         </button>
-
-        <div *ngIf="votePower">
-          <p class="mt-5">Select and click on "Vote" to vote for the selected proposal:</p>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="0">
-            <label class="form-check-label" for="inlineRadio1">{{proposalNames[0]}}</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="1">
-            <label class="form-check-label" for="inlineRadio2">{{proposalNames[1]}}</label>
-          </div>
-          <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="2">
-            <label class="form-check-label" for="inlineRadio3">{{proposalNames[2]}}</label>
-          </div>
-          <br>
-          
-          <!-- click event listener  -->
-          <button  type="button" class="btn btn-success btn-lg px-4 gap-3">    
-            Vote
-          </button>  
-        
+        <br>
+        <div *ngIf="votePowerUsed && !voted" class="mt-5">
+          <p>Please click on the proposal you want to vote for:</p><br>
+          <button #btn1 (click)="castVote(btn1.value)" type="button" class="btn btn-primary btn-lg mx-3" value="0">{{proposalNames[0]}}</button>
+          <button #btn2 (click)="castVote(btn2.value)" type="button" class="btn btn-primary btn-lg mx-3" value="1">{{proposalNames[1]}}</button>
+          <button #btn3 (click)="castVote(btn3.value)" type="button" class="btn btn-primary btn-lg mx-3" value="2">{{proposalNames[2]}}</button>
         </div>
 
         <div *ngIf="voteTx"> 

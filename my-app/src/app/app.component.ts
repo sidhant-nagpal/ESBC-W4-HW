@@ -28,6 +28,8 @@ export class AppComponent {
   voteTx: string | undefined;
   voteIndex: string | undefined;
   votePower: number | undefined;
+  votePowerUsed: number | undefined;
+  voted: boolean | undefined;
 
   constructor(private http: HttpClient) {
     this.provider = ethers.providers.getDefaultProvider('goerli');
@@ -146,12 +148,12 @@ export class AppComponent {
   }
 
   votePowerValue(power: string) {
-    this.votePower = parseInt(power);
+    this.votePowerUsed = parseInt(power);
   }
 
   castVote(index: string) {
     if (this.ballotContract) {
-      this.ballotContract['vote'](parseInt(index), this.votePower).then(
+      this.ballotContract['vote'](parseInt(index), this.votePowerUsed).then(
         (tx: ethers.providers.TransactionResponse) => {
           tx.wait().then((receipt) => {
             this.voteIndex = index;
@@ -159,6 +161,7 @@ export class AppComponent {
           });
         }
       );
+      this.voted = true;
     }
   }
 }
