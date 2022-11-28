@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { VotingTokenModule } from './votingToken/votingToken.module';
 
 @Module({
-  imports: [ConfigModule.forRoot()],
+  imports: [VotingTokenModule],
   controllers: [AppController],
   providers: [AppService],
 })

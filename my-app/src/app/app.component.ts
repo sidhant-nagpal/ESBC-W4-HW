@@ -7,13 +7,13 @@ import ballotJson from '../assets/Ballot.json';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
   provider: ethers.providers.Provider;
   wallet: ethers.Wallet | undefined;
   importInit: boolean | undefined;
-  
+
   ballotAddress: string | undefined;
   ballotContract: ethers.Contract | undefined;
 
@@ -29,36 +29,40 @@ export class AppComponent {
   voteIndex: string | undefined;
   votePower: number | undefined;
 
-
-
   constructor(private http: HttpClient) {
-    this.provider = ethers.providers.getDefaultProvider("goerli");
+    this.provider = ethers.providers.getDefaultProvider('goerli');
     this.proposalNames = [];
   }
 
   createWallet() {
     this.http
-    .get<any>('http://localhost:3000/token-address')
-    .subscribe((ans) => {
-      this.tokenAddress = ans.result;
-      if(this.tokenAddress) {
-        this.wallet = ethers.Wallet.createRandom().connect(this.provider);
-        this.tokenContract = new ethers.Contract(
-          this.tokenAddress, 
-          tokenJson.abi, 
-          this.wallet
-        );
-        this.wallet.getBalance().then((balanceBN: ethers.BigNumberish) => {
-          this.etherBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        });
-        this.tokenContract["balanceOf"](this.wallet.address).then((balanceBN: ethers.BigNumberish) => {
-          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        });
-        this.tokenContract["getVotes"](this.wallet.address).then((votesBN: ethers.BigNumberish) => {
-          this.votePower = parseFloat(ethers.utils.formatEther(votesBN));
-        });
-      }
-    });
+      .get<any>('http://localhost:3000/token/token-address')
+      .subscribe((ans) => {
+        this.tokenAddress = ans.result;
+        if (this.tokenAddress) {
+          this.wallet = ethers.Wallet.createRandom().connect(this.provider);
+          this.tokenContract = new ethers.Contract(
+            this.tokenAddress,
+            tokenJson.abi,
+            this.wallet
+          );
+          this.wallet.getBalance().then((balanceBN: ethers.BigNumberish) => {
+            this.etherBalance = parseFloat(ethers.utils.formatEther(balanceBN));
+          });
+          this.tokenContract['balanceOf'](this.wallet.address).then(
+            (balanceBN: ethers.BigNumberish) => {
+              this.tokenBalance = parseFloat(
+                ethers.utils.formatEther(balanceBN)
+              );
+            }
+          );
+          this.tokenContract['getVotes'](this.wallet.address).then(
+            (votesBN: ethers.BigNumberish) => {
+              this.votePower = parseFloat(ethers.utils.formatEther(votesBN));
+            }
+          );
+        }
+      });
   }
 
   importing() {
@@ -67,50 +71,57 @@ export class AppComponent {
 
   importWallet(key: string) {
     this.http
-    .get<any>('http://localhost:3000/token-address')
-    .subscribe((ans) => {
-      this.tokenAddress = ans.result;
-      if(this.tokenAddress) {
-        this.wallet = new ethers.Wallet(key).connect(this.provider);
-        this.tokenContract = new ethers.Contract(
-          this.tokenAddress, 
-          tokenJson.abi, 
-          this.wallet
-        );
-        this.wallet.getBalance().then((balanceBN: ethers.BigNumberish) => {
-          this.etherBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        });
-        this.tokenContract["balanceOf"](this.wallet.address).then((balanceBN: ethers.BigNumberish) => {
-          this.tokenBalance = parseFloat(ethers.utils.formatEther(balanceBN));
-        });
-        this.tokenContract["getVotes"](this.wallet.address).then((votesBN: ethers.BigNumberish) => {
-          this.votePower = parseFloat(ethers.utils.formatEther(votesBN));
-        });
-      }
-    });
+      .get<any>('http://localhost:3000/token-address')
+      .subscribe((ans) => {
+        this.tokenAddress = ans.result;
+        if (this.tokenAddress) {
+          this.wallet = new ethers.Wallet(key).connect(this.provider);
+          this.tokenContract = new ethers.Contract(
+            this.tokenAddress,
+            tokenJson.abi,
+            this.wallet
+          );
+          this.wallet.getBalance().then((balanceBN: ethers.BigNumberish) => {
+            this.etherBalance = parseFloat(ethers.utils.formatEther(balanceBN));
+          });
+          this.tokenContract['balanceOf'](this.wallet.address).then(
+            (balanceBN: ethers.BigNumberish) => {
+              this.tokenBalance = parseFloat(
+                ethers.utils.formatEther(balanceBN)
+              );
+            }
+          );
+          this.tokenContract['getVotes'](this.wallet.address).then(
+            (votesBN: ethers.BigNumberish) => {
+              this.votePower = parseFloat(ethers.utils.formatEther(votesBN));
+            }
+          );
+        }
+      });
   }
 
   claimTokens() {
-    this.http.post<any>('http://localhost:3000/claim-tokens-order', {
-      address: this.wallet?.address,
-    })
-    .subscribe((ans) => {
-      const txHash = ans.result;
-      this.provider.getTransaction(txHash).then((tx) => {
-        tx.wait().then((receipt) => {
-          
-        })
+    this.http
+      .post<any>('http://localhost:3000/claim-tokens-order', {
+        address: this.wallet?.address,
+      })
+      .subscribe((ans) => {
+        const txHash = ans.result;
+        this.provider.getTransaction(txHash).then((tx) => {
+          tx.wait().then((receipt) => {});
+        });
       });
-    });
   }
 
   delegate(address: string) {
-    if(this.tokenContract){
-      this.tokenContract["delegate"](address).then((tx: ethers.providers.TransactionResponse) => {
-        tx.wait().then((receipt) => {
-          this.delegateAddress = address;
-        });
-      });
+    if (this.tokenContract) {
+      this.tokenContract['delegate'](address).then(
+        (tx: ethers.providers.TransactionResponse) => {
+          tx.wait().then((receipt) => {
+            this.delegateAddress = address;
+          });
+        }
+      );
     }
   }
 
@@ -120,14 +131,14 @@ export class AppComponent {
   }
 
   getBallotInfo() {
-    if(this.ballotAddress){
+    if (this.ballotAddress) {
       this.ballotContract = new ethers.Contract(
-        this.ballotAddress, 
-        ballotJson.abi, 
+        this.ballotAddress,
+        ballotJson.abi,
         this.wallet
       );
-      for(let i = 0; i<3; i++){
-        this.ballotContract["proposals"](i).then((result: any) => {
+      for (let i = 0; i < 3; i++) {
+        this.ballotContract['proposals'](i).then((result: any) => {
           this.proposalNames.push(ethers.utils.parseBytes32String(result.name));
         });
       }
@@ -139,14 +150,15 @@ export class AppComponent {
   }
 
   castVote(index: string) {
-    if(this.ballotContract){
-      this.ballotContract["vote"](parseInt(index), this.votePower).then((tx: ethers.providers.TransactionResponse) => {
-        tx.wait().then((receipt) => {
-          this.voteIndex = index;
-          this.voteTx = receipt.transactionHash;
-        });
-      });
+    if (this.ballotContract) {
+      this.ballotContract['vote'](parseInt(index), this.votePower).then(
+        (tx: ethers.providers.TransactionResponse) => {
+          tx.wait().then((receipt) => {
+            this.voteIndex = index;
+            this.voteTx = receipt.transactionHash;
+          });
+        }
+      );
     }
   }
-
 }
