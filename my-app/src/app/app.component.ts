@@ -30,6 +30,11 @@ export class AppComponent {
   votePower: number | undefined;
   votePowerUsed: number | undefined;
   voted: boolean | undefined;
+  delegated: boolean | undefined;
+  claimWait: boolean | undefined;
+  claimed: boolean | undefined;
+  claimTx: string | undefined;
+  title: any;
 
   constructor(private http: HttpClient) {
     this.provider = ethers.providers.getDefaultProvider('goerli');
@@ -103,20 +108,25 @@ export class AppComponent {
   }
 
   claimTokens() {
+    this.claimWait = true;
     this.http
       .post<any>('http://localhost:3000/token/claim-tokens-order', {
         address: this.wallet?.address,
       })
       .subscribe((ans) => {
+        this.claimed = true;
         const txHash = ans.result;
         this.provider.getTransaction(txHash).then((tx) => {
-          tx.wait().then((receipt) => {});
+          tx.wait().then((receipt) => {
+            this.claimTx = receipt.transactionHash;
+          });
         });
       });
   }
 
   delegate(address: string) {
     if (this.tokenContract) {
+      this.delegated = true;
       this.tokenContract['delegate'](address).then(
         (tx: ethers.providers.TransactionResponse) => {
           tx.wait().then((receipt) => {
