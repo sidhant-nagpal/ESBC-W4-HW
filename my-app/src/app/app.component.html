@@ -21,6 +21,7 @@
         </button>
       </div>
     </div>
+
     <div *ngIf="wallet">
       <p>You are connected to the wallet {{wallet.address}}</p>
       <p>You are connected to the token {{tokenAddress}}</p>
@@ -35,25 +36,28 @@
           <div class="card-body">My voting power is: {{votePower}}</div>
         </div>
       </div>
+
       <p class="mt-4">Claim your tokens here</p>
+      <p *ngIf="claimWait && !claimed">Waiting for the response...</p>
+      <p *ngIf="claimed">Waiting for the transaction confirmation...</p>
+      <p *ngIf="claimTx">You have successfully claimed 100 tokens for the walley of address {{this.wallet.address}}</p>
       <button (click)="claimTokens()" type="button" class="btn btn-success btn-lg px-4 gap-3">
         Claim Tokens
       </button>
-      <br>
-      <br>
+      <br><br>
+
       <div class="form-group row mb-4">
         <label for="inputEmail3" class="col-sm-2 col-form-label">Delegate vote power to: </label>
         <div class="col-sm-10">
           <input #delegateAccountAddress type="email" class="form-control" id="inputEmail3" placeholder="Paste target address here">
         </div>
       </div>
-      <p *ngIf="delegateAddress">You successfully delegated vote power to {{delegateAddress}}</p>
+      <p *ngIf="delegated">Waiting for the transaction confirmation....</p>
+      <p *ngIf="delegateAddress">You've successfully delegated vote power to {{delegateAddress}}</p>
       <button (click)="delegate(delegateAccountAddress.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
         Delegate
       </button>
-      <br>
-      <br>
-      <br>
+      <br><br><br>
 
       <div *ngIf="!ballotAddress">
         <p>Connect to the ballot here:</p>
@@ -104,7 +108,7 @@
 
         <div *ngIf="voteTx" class="mt-4"> 
           <h3>Transaction successful: {{voteTx}}</h3>
-          <p>You have voted for proposal at index {{voteIndex}} with {{votePowerUsed}} vote power</p>
+          <p>You have voted for the proposal at index {{voteIndex}} with vote power of {{votePowerUsed}}</p>
         </div>
 
       </div>
