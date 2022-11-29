@@ -53,7 +53,7 @@
         </div>
       </div>
       <p *ngIf="delegated">Waiting for the transaction confirmation....</p>
-      <p *ngIf="delegateAddress">You successfully delegated vote power to {{delegateAddress}}</p>
+      <p *ngIf="delegateAddress">You've successfully delegated vote power to {{delegateAddress}}</p>
       <button (click)="delegate(delegateAccountAddress.value)" type="button" class="btn btn-success btn-lg px-4 gap-3">
         Delegate
       </button>
