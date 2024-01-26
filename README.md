@@ -1,4 +1,4 @@
-# ESBC-W3-HW Group 10
+# Tokenized Ballot
 
 Instructions to run Deployment.ts:
 
